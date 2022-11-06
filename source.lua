@@ -184,7 +184,7 @@ do -- Modules.Loader
 	local script = Instance.new('ModuleScript', Modules)
 	script.Name = "Loader"
 	local function module_script()
-		local helper = require(script.Helper)
+		local helper = require(script.Parent.Helper)
 		
 		local scripts = {
 			["baller"] = "",
@@ -206,8 +206,8 @@ do -- Modules.Loader
 	end
 	fake_module_scripts[script] = module_script
 end
-do -- nil.Helper
-	local script = Instance.new('ModuleScript', nil)
+do -- Modules.Helper
+	local script = Instance.new('ModuleScript', Modules)
 	script.Name = "Helper"
 	local function module_script()
 		local helper = {}
