@@ -219,7 +219,7 @@ local fake_module_scripts = {}
 
 do -- Modules.Loader
 	local script = Instance.new('ModuleScript', Modules)
-	script.Name = "Loader"
+	script.Name = "ScriptLoader"
 	local function module_script()
 		local helper = getrenv().require(script.Parent.LoadHelper)
 		
@@ -605,7 +605,7 @@ local function QBEJFD_fake_script() -- list.manager
 
 	local list = script.Parent
 	local modules = list.Parent.Parent.Modules
-	local loader = getrenv().require(modules.Loader)
+	local loader = getrenv().require(modules.ScriptLoader)
 	
 	for _, item in pairs(list:GetChildren()) do
 		if item:IsA("TextButton") then
