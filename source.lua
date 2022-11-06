@@ -25,6 +25,7 @@ local Modules = Instance.new("Folder")
 nebuware.Name = "nebuware"
 nebuware.Parent = game:GetService("CoreGui")
 nebuware.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+nebuware.IgnoreGuiInset = true
 
 bleh.Name = "bleh"
 bleh.Parent = nebuware
@@ -194,10 +195,9 @@ do -- Modules.Loader
 		local loader = {}
 		
 		function loader:LoadScript(name)	
-			local url = helper.GetUrl(name, scripts)	
-			
+			local url = helper.GetUrl(name, scripts)		
+			print(url)		
 			if not url then return end
-			
 			helper.Loadstring(url)	
 		end
 		
