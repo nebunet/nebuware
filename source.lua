@@ -212,48 +212,6 @@ version.TextSize = 16.000
 
 local fake_module_scripts = {}
 
-do -- Modules.Loader
-	local script = Instance.new('ModuleScript', Modules)
-	script.Name = "Loader"
-	local function module_script()
-
-		local scripts = {
-			["baller"] = "",
-			["ush"] = "https://raw.githubusercontent.com/nebunet/untitled-script-hub/main/main.lua",
-			["swords"] = "https://pastebin.com/raw/UAuVm0pu",
-			["taunts"] = "https://raw.githubusercontent.com/nebunet/fe-taunts-assets/main/source.lua",
-		}
-
-		local loader = {}
-
-		function loader.Loadstring(url)
-			loadstring(game:HttpGet(url))()
-		end
-
-		function loader.GetUrl(script, t)
-			for _, v in pairs(t) do
-				if t[script] then
-					return t[script]
-				end
-				warn('Couldn\'t find script "'..script..'"" in table!')
-
-				return false
-			end
-		end
-
-		function loader:LoadScript(name)	
-			local url = loader.GetUrl(name, scripts)	
-
-			if not url then return end
-
-			loader.Loadstring(url)	
-		end
-
-		return loader
-
-	end
-	fake_module_scripts[script] = module_script
-end
 do -- Modules.Drag
 	local script = Instance.new('ModuleScript', Modules)
 	script.Name = "Drag"
@@ -587,8 +545,7 @@ local function FRUXY_fake_script() -- list.manager
 	end
 
 	local list = script.Parent
-	local modules = list.Parent.Parent.Modules
-	local loader = require(modules.Loader)
+	local loader = loadstring(game:HttpGet("https://raw.githubusercontent.com/nebunet/nebuware/main/loader.lua"))()
 
 	for _, item in pairs(list:GetChildren()) do
 		if item:IsA("TextButton") then
