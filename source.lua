@@ -1,3 +1,8 @@
+-- Gui to Lua
+-- Version: 3.2
+
+-- Instances:
+
 local nebuware = Instance.new("ScreenGui")
 local bleh = Instance.new("Frame")
 local UIGradient = Instance.new("UIGradient")
@@ -16,11 +21,16 @@ local UIGridLayout = Instance.new("UIGridLayout")
 local swords = Instance.new("TextButton")
 local UICorner_4 = Instance.new("UICorner")
 local UICorner_5 = Instance.new("UICorner")
-local baller = Instance.new("TextButton")
+local taunts = Instance.new("TextButton")
 local UICorner_6 = Instance.new("UICorner")
 local ush = Instance.new("TextButton")
 local UICorner_7 = Instance.new("UICorner")
+local baller = Instance.new("TextButton")
+local UICorner_8 = Instance.new("UICorner")
 local Modules = Instance.new("Folder")
+local version = Instance.new("TextLabel")
+
+--Properties:
 
 nebuware.Name = "nebuware"
 nebuware.Parent = game:GetService("CoreGui")
@@ -43,7 +53,7 @@ title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 title.BackgroundTransparency = 1.000
 title.Position = UDim2.new(0.379999995, 0, 0.0399999991, 0)
 title.Size = UDim2.new(0.234608814, 0, 0.10204082, 0)
-title.Font = Enum.Font.Unknown
+title.Font = Enum.Font.SourceSansSemibold
 title.Text = "nebuware"
 title.TextColor3 = Color3.fromRGB(70, 46, 255)
 title.TextSize = 40.000
@@ -123,6 +133,7 @@ list.Position = UDim2.new(0.5, 0, 0.588461518, 0)
 list.Size = UDim2.new(0, 196, 0, 214)
 
 UIGridLayout.Parent = list
+UIGridLayout.FillDirection = Enum.FillDirection.Vertical
 UIGridLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 UIGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
 UIGridLayout.CellSize = UDim2.new(0, 98, 0, 25)
@@ -144,24 +155,25 @@ UICorner_4.Parent = swords
 
 UICorner_5.Parent = list
 
-baller.Name = "baller"
-baller.Parent = list
-baller.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-baller.BorderSizePixel = 0
-baller.Size = UDim2.new(0, 200, 0, 50)
-baller.Font = Enum.Font.SourceSansBold
-baller.Text = "baller"
-baller.TextColor3 = Color3.fromRGB(255, 255, 255)
-baller.TextSize = 14.000
-baller.TextWrapped = true
+taunts.Name = "taunts"
+taunts.Parent = list
+taunts.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+taunts.BorderSizePixel = 0
+taunts.Size = UDim2.new(0, 200, 0, 50)
+taunts.Font = Enum.Font.SourceSansBold
+taunts.Text = "fe taunts"
+taunts.TextColor3 = Color3.fromRGB(255, 255, 255)
+taunts.TextSize = 14.000
+taunts.TextWrapped = true
 
 UICorner_6.CornerRadius = UDim.new(0, 4)
-UICorner_6.Parent = baller
+UICorner_6.Parent = taunts
 
 ush.Name = "ush"
 ush.Parent = list
 ush.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 ush.BorderSizePixel = 0
+ush.Position = UDim2.new(0.581632614, 0, 0.925233662, 0)
 ush.Size = UDim2.new(0, 200, 0, 50)
 ush.Font = Enum.Font.SourceSansBold
 ush.Text = "untitled script hub"
@@ -173,8 +185,33 @@ ush.TextWrapped = true
 UICorner_7.CornerRadius = UDim.new(0, 4)
 UICorner_7.Parent = ush
 
+baller.Name = "baller"
+baller.Parent = list
+baller.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+baller.BorderSizePixel = 0
+baller.Size = UDim2.new(0, 200, 0, 50)
+baller.Font = Enum.Font.SourceSansBold
+baller.Text = "baller"
+baller.TextColor3 = Color3.fromRGB(255, 255, 255)
+baller.TextSize = 14.000
+baller.TextWrapped = true
+
+UICorner_8.CornerRadius = UDim.new(0, 4)
+UICorner_8.Parent = baller
+
 Modules.Name = "Modules"
 Modules.Parent = bleh
+
+version.Name = "version"
+version.Parent = bleh
+version.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+version.BackgroundTransparency = 1.000
+version.Position = UDim2.new(0.898605108, 0, 0.927780628, 0)
+version.Size = UDim2.new(0.0978927985, 0, 0.042857144, 0)
+version.Font = Enum.Font.SourceSansItalic
+version.Text = "v1.0 beta"
+version.TextColor3 = Color3.fromRGB(255, 255, 255)
+version.TextSize = 16.000
 
 -- Module Scripts:
 
@@ -184,50 +221,26 @@ do -- Modules.Loader
 	local script = Instance.new('ModuleScript', Modules)
 	script.Name = "Loader"
 	local function module_script()
-		local helper = require(script.Parent.Helper)
+		local helper = require(script.Parent.LoadHelper)
 		
 		local scripts = {
 			["baller"] = "",
 			["ush"] = "https://raw.githubusercontent.com/nebunet/untitled-script-hub/main/main.lua",
 			["swords"] = "https://pastebin.com/raw/UAuVm0pu",
+			["taunts"] = "https://raw.githubusercontent.com/nebunet/fe-taunts-assets/main/source.lua",
 		}
 		
 		local loader = {}
 		
 		function loader:LoadScript(name)	
-			local url = helper.GetUrl(name, scripts)		
-			print(url)		
+			local url = helper.GetUrl(name, scripts)	
+			
 			if not url then return end
+			
 			helper.Loadstring(url)	
 		end
 		
 		return loader
-		
-	end
-	fake_module_scripts[script] = module_script
-end
-do -- Modules.Helper
-	local script = Instance.new('ModuleScript', Modules)
-	script.Name = "Helper"
-	local function module_script()
-		local helper = {}
-		
-		function helper.Loadstring(url)
-			loadstring(game:HttpGet(url))()
-		end
-		
-		function helper.GetUrl(script, t)
-			for _, v in pairs(t) do
-				if t[script] then
-					return t[script]
-				end
-				warn('Couldn\'t find script "'..script..'"" in table!')
-				
-				return false
-			end
-		end
-		
-		return helper
 		
 	end
 	fake_module_scripts[script] = module_script
@@ -364,11 +377,37 @@ do -- Modules.Drag
 	end
 	fake_module_scripts[script] = module_script
 end
+do -- Modules.LoadHelper
+	local script = Instance.new('ModuleScript', Modules)
+	script.Name = "LoadHelper"
+	local function module_script()
+		local helper = {}
+		
+		function helper.Loadstring(url)
+			loadstring(game:HttpGet(url))()
+		end
+		
+		function helper.GetUrl(script, t)
+			for _, v in pairs(t) do
+				if t[script] then
+					return t[script]
+				end
+				warn('Couldn\'t find script "'..script..'"" in table!')
+				
+				return false
+			end
+		end
+		
+		return helper
+		
+	end
+	fake_module_scripts[script] = module_script
+end
 
 
 -- Scripts:
 
-local function MEAWUT_fake_script() -- bleh.toggle 
+local function EZWMUO_fake_script() -- bleh.toggle 
 	local script = Instance.new('LocalScript', bleh)
 	local req = require
 	local require = function(obj)
@@ -384,6 +423,7 @@ local function MEAWUT_fake_script() -- bleh.toggle
 	local bleh = script.Parent
 	local title = bleh.title
 	local sframe = bleh.scripts
+	local ver = bleh.version
 	local pbg = bleh.pbg
 	local welcome = pbg.welcome
 	local name = pbg.name
@@ -489,15 +529,29 @@ local function MEAWUT_fake_script() -- bleh.toggle
 			props.Rotation = 0
 		end
 	
-		local ti = TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+		local ti = TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
 	
 		local m4 = ts:Create(sframe, ti, props)
 	
 		m4:Play()
+		
+		if active == true then
+			props.Position = UDim2.new(0.898, 0, 1.1, 0)
+			props.Rotation = -10
+		elseif active == false then
+			props.Position = UDim2.new(0.898, 0, 0.942, 0)
+			props.Rotation = 0
+		end
+	
+		local ti = TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+	
+		local m5 = ts:Create(ver, ti, props)
+	
+		m5:Play()
 	end
 end
-coroutine.wrap(MEAWUT_fake_script)()
-local function KVRWEQ_fake_script() -- player.shot 
+coroutine.wrap(EZWMUO_fake_script)()
+local function TWXAZ_fake_script() -- player.shot 
 	local script = Instance.new('LocalScript', player)
 	local req = require
 	local require = function(obj)
@@ -521,8 +575,8 @@ local function KVRWEQ_fake_script() -- player.shot
 	local imageLabel = script.Parent
 	imageLabel.Image = (isReady and content) or placeholder
 end
-coroutine.wrap(KVRWEQ_fake_script)()
-local function DHLZBJ_fake_script() -- name.changer 
+coroutine.wrap(TWXAZ_fake_script)()
+local function FBFUWU_fake_script() -- name.changer 
 	local script = Instance.new('LocalScript', name)
 	local req = require
 	local require = function(obj)
@@ -537,8 +591,8 @@ local function DHLZBJ_fake_script() -- name.changer
 	local name = game:GetService("Players").LocalPlayer.DisplayName
 	thing.Text = name.."."
 end
-coroutine.wrap(DHLZBJ_fake_script)()
-local function CSKS_fake_script() -- list.manager 
+coroutine.wrap(FBFUWU_fake_script)()
+local function QBEJFD_fake_script() -- list.manager 
 	local script = Instance.new('LocalScript', list)
 	local req = require
 	local require = function(obj)
@@ -557,15 +611,27 @@ local function CSKS_fake_script() -- list.manager
 		if item:IsA("TextButton") then
 			local button = item
 			
-			button.Activated:Connect(function()
-				loader:LoadScript(string.lower(button.Name))
-			end)
+			if button.Name == "baller" then
+				button.Activated:Connect(function()
+					local sound = Instance.new("Sound", workspace)
+					sound.SoundId = "rbxassetid://7683004261"
+					sound:Play()
+					
+					button:Destroy()
+					
+					game:GetService("Debris"):AddItem(sound, 3)
+				end)
+			else
+				button.Activated:Connect(function()
+					loader:LoadScript(string.lower(button.Name))
+				end)
+			end
 			
 		end
 	end
 end
-coroutine.wrap(CSKS_fake_script)()
-local function UOWGV_fake_script() -- scripts.drag 
+coroutine.wrap(QBEJFD_fake_script)()
+local function ZKIFYUV_fake_script() -- scripts.drag 
 	local script = Instance.new('LocalScript', scripts)
 	local req = require
 	local require = function(obj)
@@ -581,4 +647,4 @@ local function UOWGV_fake_script() -- scripts.drag
 	local fd = drag.new(frame)
 	fd:Enable()
 end
-coroutine.wrap(UOWGV_fake_script)()
+coroutine.wrap(ZKIFYUV_fake_script)()
