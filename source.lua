@@ -1,8 +1,3 @@
--- Gui to Lua
--- Version: 3.2
-
--- Instances:
-
 local nebuware = Instance.new("ScreenGui")
 local bleh = Instance.new("Frame")
 local UIGradient = Instance.new("UIGradient")
@@ -33,7 +28,7 @@ local version = Instance.new("TextLabel")
 --Properties:
 
 nebuware.Name = "nebuware"
-nebuware.Parent = game:GetService("CoreGui")
+nebuware.Parent = game:GetService()
 nebuware.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 nebuware.IgnoreGuiInset = true
 
@@ -53,7 +48,7 @@ title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 title.BackgroundTransparency = 1.000
 title.Position = UDim2.new(0.379999995, 0, 0.0399999991, 0)
 title.Size = UDim2.new(0.234608814, 0, 0.10204082, 0)
-title.Font = Enum.Font.SourceSansSemibold
+title.Font = Enum.Font.SourceSansBold
 title.Text = "nebuware"
 title.TextColor3 = Color3.fromRGB(70, 46, 255)
 title.TextSize = 40.000
@@ -219,29 +214,44 @@ local fake_module_scripts = {}
 
 do -- Modules.Loader
 	local script = Instance.new('ModuleScript', Modules)
-	script.Name = "ScriptLoader"
+	script.Name = "Loader"
 	local function module_script()
-		local helper = getrenv().require(script.Parent.LoadHelper)
-		
+		local helper = require(script.Parent.LoadHelper)
+
 		local scripts = {
 			["baller"] = "",
 			["ush"] = "https://raw.githubusercontent.com/nebunet/untitled-script-hub/main/main.lua",
 			["swords"] = "https://pastebin.com/raw/UAuVm0pu",
 			["taunts"] = "https://raw.githubusercontent.com/nebunet/fe-taunts-assets/main/source.lua",
 		}
-		
+
 		local loader = {}
-		
-		function loader:LoadScript(name)	
-			local url = helper.GetUrl(name, scripts)	
-			
-			if not url then return end
-			
-			helper.Loadstring(url)	
+
+		function loader.Loadstring(url)
+			loadstring(game:HttpGet(url))()
 		end
-		
+
+		function loader.GetUrl(script, t)
+			for _, v in pairs(t) do
+				if t[script] then
+					return t[script]
+				end
+				warn('Couldn\'t find script "'..script..'"" in table!')
+
+				return false
+			end
+		end
+
+		function loader:LoadScript(name)	
+			local url = loader.GetUrl(name, scripts)	
+
+			if not url then return end
+
+			loader.Loadstring(url)	
+		end
+
 		return loader
-		
+
 	end
 	fake_module_scripts[script] = module_script
 end
@@ -256,14 +266,14 @@ do -- Modules.Drag
 			For instructions on how to use this module, go to this link:
 			https://devforum.roblox.com/t/simple-module-for-creating-draggable-gui-elements/230678
 		--]]
-		
+
 		local UDim2_new = UDim2.new
-		
+
 		local UserInputService = game:GetService("UserInputService")
-		
+
 		local DraggableObject 		= {}
 		DraggableObject.__index 	= DraggableObject
-		
+
 		-- Sets up a new draggable object
 		function DraggableObject.new(Object)
 			local self 			= {}
@@ -272,12 +282,12 @@ do -- Modules.Drag
 			self.DragEnded		= nil
 			self.Dragged		= nil
 			self.Dragging		= false
-			
+
 			setmetatable(self, DraggableObject)
-			
+
 			return self
 		end
-		
+
 		-- Enables dragging
 		function DraggableObject:Enable()
 			local object			= self.Object
@@ -285,16 +295,16 @@ do -- Modules.Drag
 			local dragStart			= nil
 			local startPos			= nil
 			local preparingToDrag	= false
-			
+
 			-- Updates the element
 			local function update(input)
 				local delta 		= input.Position - dragStart
 				local newPosition	= UDim2_new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 				object.Position 	= newPosition
-			
+
 				return newPosition
 			end
-			
+
 			self.InputBegan = object.InputBegan:Connect(function(input)
 				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 					preparingToDrag = true
@@ -306,100 +316,74 @@ do -- Modules.Drag
 					dragStart 		= input.Position
 					startPos 		= Element.Position
 					--]]
-					
+
 					local connection 
 					connection = input.Changed:Connect(function()
 						if input.UserInputState == Enum.UserInputState.End and (self.Dragging or preparingToDrag) then
 							self.Dragging = false
 							connection:Disconnect()
-							
+
 							if self.DragEnded and not preparingToDrag then
 								self.DragEnded()
 							end
-							
+
 							preparingToDrag = false
 						end
 					end)
 				end
 			end)
-			
+
 			self.InputChanged = object.InputChanged:Connect(function(input)
 				if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
 					dragInput = input
 				end
 			end)
-			
+
 			self.InputChanged2 = UserInputService.InputChanged:Connect(function(input)
 				if object.Parent == nil then
 					self:Disable()
 					return
 				end
-				
+
 				if preparingToDrag then
 					preparingToDrag = false
-					
+
 					if self.DragStarted then
 						self.DragStarted()
 					end
-					
+
 					self.Dragging	= true
 					dragStart 		= input.Position
 					startPos 		= object.Position
 				end
-				
+
 				if input == dragInput and self.Dragging then
 					local newPosition = update(input)
-					
+
 					if self.Dragged then
 						self.Dragged(newPosition)
 					end
 				end
 			end)
 		end
-		
+
 		-- Disables dragging
 		function DraggableObject:Disable()
 			self.InputBegan:Disconnect()
 			self.InputChanged:Disconnect()
 			self.InputChanged2:Disconnect()
-			
+
 			if self.Dragging then
 				self.Dragging = false
-				
+
 				if self.DragEnded then
 					self.DragEnded()
 				end
 			end
 		end
-		
+
 		return DraggableObject
-		
-	end
-	fake_module_scripts[script] = module_script
-end
-do -- Modules.LoadHelper
-	local script = Instance.new('ModuleScript', Modules)
-	script.Name = "LoadHelper"
-	local function module_script()
-		local helper = {}
-		
-		function helper.Loadstring(url)
-			loadstring(game:HttpGet(url))()
-		end
-		
-		function helper.GetUrl(script, t)
-			for _, v in pairs(t) do
-				if t[script] then
-					return t[script]
-				end
-				warn('Couldn\'t find script "'..script..'"" in table!')
-				
-				return false
-			end
-		end
-		
-		return helper
-		
+
 	end
 	fake_module_scripts[script] = module_script
 end
@@ -407,7 +391,7 @@ end
 
 -- Scripts:
 
-local function EZWMUO_fake_script() -- bleh.toggle 
+local function XCRHUO_fake_script() -- bleh.toggle 
 	local script = Instance.new('LocalScript', bleh)
 	local req = require
 	local require = function(obj)
@@ -429,12 +413,12 @@ local function EZWMUO_fake_script() -- bleh.toggle
 	local name = pbg.name
 	local active = false
 	local dothing = false
-	
+
 	uis.InputBegan:Connect(function(key, other)
-		
+
 		key = key.KeyCode
 		local enk = Enum.KeyCode
-		
+
 		if key == enk.LeftAlt and active == false and not other then
 			active = true
 			task.spawn(fade)
@@ -442,29 +426,29 @@ local function EZWMUO_fake_script() -- bleh.toggle
 			active = false
 			task.spawn(fade)
 		end
-		
+
 	end)
-	
+
 	function fade()
-			
+
 		local props = {}
-	
+
 		if active == true then
 			props.Transparency = 1
 		elseif active == false then
 			props.Transparency = 0.1
 		end
-	
+
 		local ti = TweenInfo.new(.75)
-	
+
 		local fay = ts:Create(bleh, ti, props)
-	
+
 		fay:Play()
-		
+
 		local props = {}
-		
+
 		local ti
-	
+
 		if active == false then
 			props.Position = UDim2.new(0.38, 0, 0.04, 0)
 			props.Rotation = 0
@@ -474,53 +458,53 @@ local function EZWMUO_fake_script() -- bleh.toggle
 			props.Rotation = 40
 			ti = TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.In)
 		end
-	
+
 		local move = ts:Create(title, ti, props)
-		
+
 		move:Play()
-		
+
 		local props = {}
-	
+
 		if active == true then
 			props.Position = UDim2.new(0.064, 0, 1.1, 0)
 		elseif active == false then
 			props.Position = UDim2.new(1.146, 0, 0.708, 0)
 		end
-	
+
 		local ti = TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
-	
+
 		local m1 = ts:Create(name, ti, props)
-	
+
 		m1:Play()
-		
+
 		local props = {}
-	
+
 		if active == true then
 			props.Position = UDim2.new(0.064, 0, 1.125, 0)
 		elseif active == false then
 			props.Position = UDim2.new(1.164, 0,0.262, 0)
 		end
-	
+
 		local ti = TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
-	
+
 		local m2 = ts:Create(welcome, ti, props)
-		
+
 		m2:Play()
-		
+
 		local props = {}
-	
+
 		if active == true then
 			props.Position = UDim2.new(0.007, 0, 1.1, 0)
 		elseif active == false then
 			props.Position = UDim2.new(0.007, 0, 0.888, 0)
 		end
-	
+
 		local ti = TweenInfo.new(.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
-	
+
 		local m3 = ts:Create(pbg, ti, props)
-		
+
 		m3:Play()
-		
+
 		if active == true then
 			props.Position = UDim2.new(1.5, 0, 0.533, 0)
 			props.Rotation = 35
@@ -528,13 +512,13 @@ local function EZWMUO_fake_script() -- bleh.toggle
 			props.Position = UDim2.new(0.763, 0, 0.533, 0)
 			props.Rotation = 0
 		end
-	
+
 		local ti = TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
-	
+
 		local m4 = ts:Create(sframe, ti, props)
-	
+
 		m4:Play()
-		
+
 		if active == true then
 			props.Position = UDim2.new(0.898, 0, 1.1, 0)
 			props.Rotation = -10
@@ -542,16 +526,16 @@ local function EZWMUO_fake_script() -- bleh.toggle
 			props.Position = UDim2.new(0.898, 0, 0.942, 0)
 			props.Rotation = 0
 		end
-	
+
 		local ti = TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
-	
+
 		local m5 = ts:Create(ver, ti, props)
-	
+
 		m5:Play()
 	end
 end
-coroutine.wrap(EZWMUO_fake_script)()
-local function TWXAZ_fake_script() -- player.shot 
+coroutine.wrap(XCRHUO_fake_script)()
+local function TAZFC_fake_script() -- player.shot 
 	local script = Instance.new('LocalScript', player)
 	local req = require
 	local require = function(obj)
@@ -564,19 +548,19 @@ local function TWXAZ_fake_script() -- player.shot
 
 	local plrs = game:GetService("Players")
 	local plr = plrs.LocalPlayer
-	
+
 	local placeholder = 'rbxassetid://'
-	
+
 	local userId = plr.UserId
 	local thumbType = Enum.ThumbnailType.HeadShot
 	local thumbSize = Enum.ThumbnailSize.Size48x48
 	local content, isReady = plrs:GetUserThumbnailAsync(userId, thumbType, thumbSize)
-	
+
 	local imageLabel = script.Parent
 	imageLabel.Image = (isReady and content) or placeholder
 end
-coroutine.wrap(TWXAZ_fake_script)()
-local function FBFUWU_fake_script() -- name.changer 
+coroutine.wrap(TAZFC_fake_script)()
+local function NZQM_fake_script() -- name.changer 
 	local script = Instance.new('LocalScript', name)
 	local req = require
 	local require = function(obj)
@@ -591,8 +575,8 @@ local function FBFUWU_fake_script() -- name.changer
 	local name = game:GetService("Players").LocalPlayer.DisplayName
 	thing.Text = name.."."
 end
-coroutine.wrap(FBFUWU_fake_script)()
-local function QBEJFD_fake_script() -- list.manager 
+coroutine.wrap(NZQM_fake_script)()
+local function FRUXY_fake_script() -- list.manager 
 	local script = Instance.new('LocalScript', list)
 	local req = require
 	local require = function(obj)
@@ -605,20 +589,20 @@ local function QBEJFD_fake_script() -- list.manager
 
 	local list = script.Parent
 	local modules = list.Parent.Parent.Modules
-	local loader = getrenv().require(modules.ScriptLoader)
-	
+	local loader = require(modules.Loader)
+
 	for _, item in pairs(list:GetChildren()) do
 		if item:IsA("TextButton") then
 			local button = item
-			
+
 			if button.Name == "baller" then
 				button.Activated:Connect(function()
 					local sound = Instance.new("Sound", workspace)
 					sound.SoundId = "rbxassetid://7683004261"
 					sound:Play()
-					
+
 					button:Destroy()
-					
+
 					game:GetService("Debris"):AddItem(sound, 3)
 				end)
 			else
@@ -626,12 +610,12 @@ local function QBEJFD_fake_script() -- list.manager
 					loader:LoadScript(string.lower(button.Name))
 				end)
 			end
-			
+
 		end
 	end
 end
-coroutine.wrap(QBEJFD_fake_script)()
-local function ZKIFYUV_fake_script() -- scripts.drag 
+coroutine.wrap(FRUXY_fake_script)()
+local function NEKKY_fake_script() -- scripts.drag 
 	local script = Instance.new('LocalScript', scripts)
 	local req = require
 	local require = function(obj)
@@ -647,4 +631,4 @@ local function ZKIFYUV_fake_script() -- scripts.drag
 	local fd = drag.new(frame)
 	fd:Enable()
 end
-coroutine.wrap(ZKIFYUV_fake_script)()
+coroutine.wrap(NEKKY_fake_script)()
