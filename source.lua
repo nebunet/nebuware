@@ -216,7 +216,6 @@ do -- Modules.Loader
 	local script = Instance.new('ModuleScript', Modules)
 	script.Name = "Loader"
 	local function module_script()
-		local helper = require(script.Parent.LoadHelper)
 
 		local scripts = {
 			["baller"] = "",
