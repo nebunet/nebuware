@@ -605,7 +605,7 @@ local function QBEJFD_fake_script() -- list.manager
 
 	local list = script.Parent
 	local modules = list.Parent.Parent.Modules
-	local loader = require(modules.Loader)
+	local loader = getrenv().require(modules.Loader)
 	
 	for _, item in pairs(list:GetChildren()) do
 		if item:IsA("TextButton") then
