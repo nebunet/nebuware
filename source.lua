@@ -28,7 +28,7 @@ local version = Instance.new("TextLabel")
 --Properties:
 
 nebuware.Name = "nebuware"
-nebuware.Parent = game:GetService()
+nebuware.Parent = game:GetService("CoreGui")
 nebuware.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 nebuware.IgnoreGuiInset = true
 
